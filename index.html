@@ -64,13 +64,12 @@ button,input,select{font:inherit}button{cursor:pointer;border:0}.hidden{display:
         <div class="field"><label>Possui filhos?</label><select name="hasChildren" id="hasChildren"><option>Não</option><option>Sim</option></select></div>
         <div class="field"><label>Quantidade de filhos</label><input name="childrenCount" id="childrenCount" type="number" min="0" value="0"></div>
         <div class="field"><label>Telefone</label><input name="phone" type="tel" placeholder="(00) 00000-0000"></div>
+        <div class="field"><label for="memberEmail">E-mail</label><input id="memberEmail" name="email" type="email" placeholder="nome@exemplo.com"></div>
         <div class="field"><label>Data da visita na Lagoinha</label><input name="visitDate" type="date"></div>
       </div>
       <div class="section-title">Endereço completo</div>
       <div class="grid">
-        <div class="field span2"><label>Rua</label><input name="street"></div>
-        <div class="field"><label>Nº</label><input name="number"></div>
-        <div class="field"><label>CEP</label><input name="zip" placeholder="00000-000"></div>
+        <div class="field"><label for="memberMunicipality">Município</label><input id="memberMunicipality" name="municipality" autocomplete="address-level2"></div>
         <div class="field"><label>Bairro</label><input name="neighborhood"></div>
         <div class="field"><label>Complemento</label><input name="complement"></div>
       </div>
@@ -81,6 +80,8 @@ button,input,select{font:inherit}button{cursor:pointer;border:0}.hidden{display:
         <div class="field"><label>Batizado(a)?</label><select name="baptized"><option>Não</option><option>Sim</option></select></div>
         <div class="field"><label>Encaminhado para o GC?</label><select name="gc"><option>Não</option><option>Sim</option></select></div>
         <div class="field"><label>Data de encaminhamento</label><input name="gcDate" type="date"></div>
+        <div class="field"><label for="memberWelcomingGc">GC acolhedor</label><input id="memberWelcomingGc" name="welcomingGc" placeholder="Nome do GC acolhedor"></div>
+        <div class="field"><label for="memberDiscipler">Discipulador</label><input id="memberDiscipler" name="discipler" placeholder="Nome do discipulador"></div>
       </div>
       <div class="actions" style="margin-top:12px"><button class="btn">Salvar Cadastro</button><button type="reset" class="btn secondary">Limpar formulário</button></div>
     </form>
@@ -186,10 +187,11 @@ function renderDashboard(){
  $('reportTable').innerHTML=tableHTML(['Nome','Gênero','Convertido','Novo convertido','Batizado','GC','Data visita'],data.slice().reverse().map(m=>`<tr><td>${escapeHTML(m.name)}</td><td>${escapeHTML(m.gender||'—')}</td><td>${escapeHTML(m.converted)}</td><td>${escapeHTML(m.newConvert)}</td><td>${escapeHTML(m.baptized)}</td><td>${escapeHTML(m.gc)}</td><td>${escapeHTML(m.visitDate||'—')}</td></tr>`),'Nenhum dado corresponde aos filtros selecionados.');
 }
 ['filterGender','filterBaptized','filterNew','filterGc'].forEach(id=>$(id).addEventListener('change',renderDashboard));
-function exportExcel(){const data=filteredMembers();if(!data.length){toast('Não há dados para exportar com os filtros atuais.',true);return}if(typeof XLSX==='undefined'){toast('Biblioteca Excel indisponível. Verifique sua conexão.',true);return}const rows=data.map(m=>({'Nome completo':m.name,'Nascimento':m.birth,'Gênero':m.gender,'Estado civil':m.marital,'Possui filhos':m.hasChildren,'Quantidade de filhos':m.childrenCount,'Telefone':m.phone,'Data da visita':m.visitDate,'Rua':m.street,'Número':m.number,'CEP':m.zip,'Bairro':m.neighborhood,'Complemento':m.complement,'Convertido':m.converted,'Novo convertido':m.newConvert,'Encaminhado para GC':m.gc,'Data de encaminhamento':m.gcDate,'Batizado':m.baptized}));const ws=XLSX.utils.json_to_sheet(rows),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Membros');XLSX.writeFile(wb,'relatorio_consolidacao_lagoinha.xlsx');toast('Relatório Excel gerado com os filtros aplicados.')}
+function exportExcel(){const data=filteredMembers();if(!data.length){toast('Não há dados para exportar com os filtros atuais.',true);return}if(typeof XLSX==='undefined'){toast('Biblioteca Excel indisponível. Verifique sua conexão.',true);return}const rows=data.map(m=>({'Nome completo':m.name,'Nascimento':m.birth,'Gênero':m.gender,'Estado civil':m.marital,'Possui filhos':m.hasChildren,'Quantidade de filhos':m.childrenCount,'Telefone':m.phone,'E-mail':m.email||'','Data da visita':m.visitDate,'Município':m.municipality||'','Bairro':m.neighborhood,'Complemento':m.complement,'Convertido':m.converted,'Novo convertido':m.newConvert,'Encaminhado para GC':m.gc,'Data de encaminhamento':m.gcDate,'GC acolhedor':m.welcomingGc||'','Discipulador':m.discipler||'','Batizado':m.baptized}));const ws=XLSX.utils.json_to_sheet(rows),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Membros');XLSX.writeFile(wb,'relatorio_consolidacao_lagoinha.xlsx');toast('Relatório Excel gerado com os filtros aplicados.')}
 if(session){const valid=users.find(u=>u.id===session.id&&u.status==='active');if(!valid){session=null;localStorage.removeItem(KEYS.session)}else session={id:valid.id,name:valid.name,username:valid.username,role:valid.role}}
 $('childrenCount').disabled=$('hasChildren').value==='Não';renderAuth();
 </script>
 </body>
 </html>
+
 
